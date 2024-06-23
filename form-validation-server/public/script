@@ -1,0 +1,56 @@
+document.getElementById('myForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    var name = document.getElementById('name').value;
+    var email = document.getElementById('email').value;
+
+    var nameError = document.getElementById('nameError');
+    var emailError = document.getElementById('emailError');
+    var successMessage = document.getElementById('successMessage');
+
+    var isValid = true;
+
+    if (name === '') {
+        nameError.textContent = 'Name is required';
+        nameError.style.display = 'block';
+        isValid = false;
+    } else {
+        nameError.style.display = 'none';
+    }
+
+    if (email === '') {
+        emailError.textContent = 'Email is required';
+        emailError.style.display = 'block';
+        isValid = false;
+    } else if (!validateEmail(email)) {
+        emailError.textContent = 'Invalid email format';
+        emailError.style.display = 'block';
+        isValid = false;
+    } else {
+        emailError.style.display = 'none';
+    }
+
+    if (isValid) {
+        // Make a POST request to the server
+        fetch('/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email })
+        })
+        .then(response => response.text())
+        .then(data => {
+            successMessage.style.display = 'block';
+            successMessage.textContent = data;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+});
+
+function validateEmail(email) {
+    var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}

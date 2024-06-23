@@ -1,0 +1,36 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const port = 3000;
+
+// Middleware to parse the body of POST requests
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Serve static files (HTML, CSS, JS) from the 'public' directory
+app.use(express.static('public'));
+
+// In-memory database (array) to store user information
+let users = [];
+
+// Handle the POST request for form submission
+app.post('/submit', (req, res) => {
+    const { name, email } = req.body;
+
+    // Simple validation (in addition to frontend validation)
+    if (!name || !email) {
+        return res.status(400).send('Name and Email are required.');
+    }
+
+    // Save the received form data into the in-memory database
+    users.push({ name, email });
+
+    console.log(`Received form data - Name: ${name}, Email: ${email}`);
+    console.log('Current users:', users);
+    
+    res.send('Form submitted successfully!');
+});
+
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
